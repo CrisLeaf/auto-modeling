@@ -1,3 +1,7 @@
 venv/
 
 tests.ipynb
+test_datasets/
+
+*.pyc*
+__pycache__/
