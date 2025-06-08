@@ -1,6 +1,6 @@
 [project]
 name = "auto-modeling"
-version = "0.1.0"
+version = "0.1.1"
 description = "Automated model selection and optimization using scikit-learn and Optuna"
 authors = [
     { name = "Cristóbal Torres Rojas", email = "ctorres.ai@hotmail.com" }
