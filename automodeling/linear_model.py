@@ -25,7 +25,9 @@ class AutoLinearRegression(LinearRegression):
             fit_intercept = trial.suggest_categorical('fit_intercept', [True, False])
             tol = trial.suggest_float('tol', 1e-8, 1e-2, log=True)
 
-            model = LinearRegression(fit_intercept=fit_intercept, tol=tol)
+            model = LinearRegression(
+                fit_intercept=fit_intercept
+            )
             pipeline = make_pipeline(StandardScaler(), model)
             score = -cross_val_score(pipeline, X, y, cv=cv, scoring=self.scoring).mean()
             
