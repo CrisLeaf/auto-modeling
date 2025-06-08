@@ -5,3 +5,6 @@ test_datasets/
 
 *.pyc*
 __pycache__/
+
+dist/
+auto_modeling.egg-info/
