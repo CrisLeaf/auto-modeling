@@ -1,4 +1,5 @@
 venv/
+pyenv3-8/
 
 tests.ipynb
 test_datasets/
