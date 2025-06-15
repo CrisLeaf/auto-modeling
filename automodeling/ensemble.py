@@ -89,9 +89,7 @@ class AutoRandomForestRegressor(AutoModelBase, BaseEstimator, RegressorMixin):
 
         params = {
             'n_estimators': trial.suggest_int('n_estimators', 100, 1000),
-            'criterion': trial.suggest_categorical(
-                'criterion', ['squared_error', 'absolute_error', 'friedman_mse', 'poisson']
-            ),
+            'criterion': trial.suggest_categorical('criterion', ['squared_error', 'absolute_error', 'friedman_mse']),
             'max_depth': trial.suggest_int('max_depth', 3, 30),
             'min_samples_split': trial.suggest_float('min_samples_split', 0.001, 0.3),
             'min_samples_leaf': trial.suggest_float('min_samples_leaf', 0.001, 0.1),
