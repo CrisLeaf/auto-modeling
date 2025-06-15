@@ -5,6 +5,8 @@ from sklearn.model_selection import cross_val_score
 
 import optuna
 
+import re
+
 class AutoModelBase(ABC):
     def __init__(self, auto_scoring=None, auto_direction='minimize', auto_timeout=60, auto_n_trials=None, auto_verbose=False, auto_use_scaler=False):
         self.auto_scoring = auto_scoring
@@ -63,6 +65,22 @@ class AutoModelBase(ABC):
         )
         
         self.best_params_ = self._study.best_params
+        
+        clean_params = {}
+        
+        pattern = re.compile(r'^custom\d+_(.+)')
+        
+        for key, value in self.best_params_.items():
+            match = pattern.match(key)
+            if match:
+                clean_key = match.group(1)
+                clean_params[clean_key] = value
+            else:
+                clean_params[key] = value
+            
+        self.best_params_ = clean_params
+        
+        print(self.best_params_)
         self._is_searched = True
         
         for param, value in self.best_params_.items():
