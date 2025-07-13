@@ -7,6 +7,9 @@ import optuna
 
 import re
 
+from pprint import pprint
+
+
 class AutoModelBase(ABC):
     def __init__(self, auto_scoring=None, auto_direction='minimize', auto_timeout=60, auto_n_trials=None, auto_verbose=False, auto_use_scaler=False):
         self.auto_scoring = auto_scoring
@@ -80,7 +83,7 @@ class AutoModelBase(ABC):
             
         self.best_params_ = clean_params
         
-        print(self.best_params_)
+        pprint(self.best_params_)
         self._is_searched = True
         
         for param, value in self.best_params_.items():
