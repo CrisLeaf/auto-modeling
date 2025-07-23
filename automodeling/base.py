@@ -55,7 +55,10 @@ class AutoModelBase(ABC):
             else:
                 pipeline = model
             
-            score = -cross_val_score(pipeline, X, y, cv=cv, scoring=self.auto_scoring).mean()
+            score = cross_val_score(pipeline, X, y, cv=cv, scoring=self.auto_scoring).mean()
+            
+            if isinstance(self.auto_scoring, str) and self.auto_scoring.startswith('neg_'):
+                score = -score
             
             return score
         
