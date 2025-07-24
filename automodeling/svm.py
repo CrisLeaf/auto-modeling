@@ -79,7 +79,7 @@ class AutoSVR(AutoModelBase, BaseEstimator, RegressorMixin):
             'shrinking': trial.suggest_categorical('shrinking', [True, False]),
             'cache_size': 200,
             'verbose': False,
-            'max_iter': -1
+            'max_iter': trial.suggest_int('max_iter', 500, 5000)
         }
     
         return params
