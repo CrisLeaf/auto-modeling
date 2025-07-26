@@ -1,5 +1,8 @@
 from sklearn.base import BaseEstimator, RegressorMixin, ClassifierMixin
-from sklearn.ensemble import RandomForestRegressor, GradientBoostingRegressor, RandomForestClassifier
+from sklearn.ensemble import (
+    RandomForestRegressor, RandomForestClassifier,
+    GradientBoostingRegressor, GradientBoostingClassifier
+)
 
 from automodeling.base import AutoModelBase
 
@@ -316,4 +319,115 @@ class AutoRandomForestClassifier(AutoModelBase, BaseEstimator, ClassifierMixin):
         
         return params
     
+class AutoGradientBoostingClassifier(AutoModelBase, BaseEstimator, ClassifierMixin):
+    def __init__(
+            self,
+            loss='log_loss',
+            learning_rate=0.1,
+            n_estimators=100,
+            subsample=1.0,
+            criterion='friedman_mse',
+            min_samples_split=2,
+            min_samples_leaf=1,
+            min_weight_fraction_leaf=0.0,
+            max_depth=3,
+            min_impurity_decrease=0.0,
+            init=None,
+            random_state=None,
+            max_features=None,
+            verbose=0,
+            max_leaf_nodes=None,
+            warm_start=False,
+            validation_fraction=0.1,
+            n_iter_no_change=None,
+            tol=1e-4,
+            ccp_alpha=0.0,
+            auto_scoring=None,
+            auto_direction='minimize', 
+            auto_timeout=60, 
+            auto_n_trials=None, 
+            auto_verbose=False,
+            auto_use_scaler=False
+        ):
+        super().__init__(
+            auto_scoring,
+            auto_direction,
+            auto_timeout,
+            auto_n_trials,
+            auto_verbose,
+            auto_use_scaler
+        )
+        self.loss = loss
+        self.learning_rate = learning_rate
+        self.n_estimators = n_estimators
+        self.subsample = subsample
+        self.criterion = criterion
+        self.min_samples_split = min_samples_split
+        self.min_samples_leaf = min_samples_leaf
+        self.min_weight_fraction_leaf = min_weight_fraction_leaf
+        self.max_depth = max_depth
+        self.min_impurity_decrease = min_impurity_decrease
+        self.init = init
+        self.random_state = random_state
+        self.max_features = max_features
+        self.verbose = verbose
+        self.max_leaf_nodes = max_leaf_nodes
+        self.warm_start = warm_start
+        self.validation_fraction = validation_fraction
+        self.n_iter_no_change = n_iter_no_change
+        self.tol = tol
+        self.ccp_alpha = ccp_alpha
+        
     
+    def _get_model_params(self):
+        return {
+            'loss': self.loss,
+            'learning_rate': self.learning_rate,
+            'n_estimators': self.n_estimators,
+            'subsample': self.subsample,
+            'criterion': self.criterion,
+            'min_samples_split': self.min_samples_split,
+            'min_samples_leaf': self.min_samples_leaf,
+            'min_weight_fraction_leaf': self.min_weight_fraction_leaf,
+            'max_depth': self.max_depth,
+            'min_impurity_decrease': self.min_impurity_decrease,
+            'init': self.init,
+            'random_state': self.random_state,
+            'max_features': self.max_features,
+            'verbose': self.verbose,
+            'max_leaf_nodes': self.max_leaf_nodes,
+            'warm_start': self.warm_start,
+            'validation_fraction': self.validation_fraction,
+            'n_iter_no_change': self.n_iter_no_change,
+            'tol': self.tol,
+            'ccp_alpha': self.ccp_alpha
+        }
+    
+    def _build_model(self, params):
+        return GradientBoostingClassifier(**params)
+
+    def _get_search_space(self, trial):
+        params = {
+            'loss': trial.suggest_categorical('loss', ['log_loss', 'exponential']),
+            'learning_rate': trial.suggest_float('learning_rate', 0.001, 0.3, log=True),
+            'n_estimators': trial.suggest_int('n_estimators', 100, 1000),
+            'subsample': trial.suggest_float('subsample', 0.5, 1.0),
+            'criterion': trial.suggest_categorical('criterion', ['friedman_mse', 'squared_error']),
+            'min_samples_split': trial.suggest_float('min_samples_split', 0.001, 0.3) if trial.suggest_categorical('use_min_samples_split', [True, False]) else 2,
+            'min_samples_leaf': trial.suggest_float('min_samples_leaf', 0.001, 0.1) if trial.suggest_categorical('use_min_samples_leaf', [True, False]) else 1,
+            'min_weight_fraction_leaf': trial.suggest_float('min_weight_fraction_leaf', 0.0, 0.1),
+            'max_depth': trial.suggest_int('max_depth', 3, 30),
+            'min_impurity_decrease': trial.suggest_float('min_impurity_decrease', 0.0, 0.01),
+            'init': self.init,
+            'random_state': trial.suggest_categorical('random_state', [42]),
+            'max_features': trial.suggest_categorical('max_features', ['sqrt', 'log2', None, 0.3, 0.7, 1.0]),
+            'verbose': self.verbose,
+            'max_leaf_nodes': trial.suggest_int('max_leaf_nodes', 10, 100) if trial.suggest_categorical('use_max_leaf_nodes', [True, False]) else None,
+            'warm_start': self.warm_start,
+            'validation_fraction': trial.suggest_float('validation_fraction', 0.1, 0.3),
+            'n_iter_no_change': trial.suggest_int('n_iter_no_change', 1, 10) if trial.suggest_categorical('use_n_iter_no_change', [True, False]) else None,
+            'tol': trial.suggest_float('tol', 1e-6, 1e-2, log=True),
+            'ccp_alpha': trial.suggest_float('ccp_alpha', 0.0, 0.01)
+        }
+        
+        return params
